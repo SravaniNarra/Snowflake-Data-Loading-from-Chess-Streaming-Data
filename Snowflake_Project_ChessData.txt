@@ -1,0 +1,124 @@
+CREATE or REPLACE STORAGE INTEGRATION S3Integration
+  TYPE = EXTERNAL_STAGE
+  STORAGE_PROVIDER = 'S3'
+  ENABLED = TRUE
+  STORAGE_AWS_ROLE_ARN = 'arn:aws:iam::559310130181:role/snowflake_access'
+  STORAGE_ALLOWED_LOCATIONS = ('s3://chessplayerdata')
+  
+DESC INTEGRATION S3Integration;
+
+Update IAM Role Policy.
+
+create or replace file format CHESSDB.public.json_format
+type = 'json';
+
+
+
+create or replace external table CHESSDB.PUBLIC.BULLETDATA_JSON(
+	ID VARCHAR(16777216) AS (CAST(GET(VALUE, 'c1') AS VARCHAR(16777216))),
+	USERNAME VARCHAR(16777216) AS (CAST(GET(VALUE, 'c2') AS VARCHAR(16777216))),
+	PERFS VARCHAR(16777216) AS (CAST(GET(VALUE, 'c3') AS VARCHAR(16777216))),
+	BULLET VARCHAR(16777216) AS (CAST(GET(VALUE, 'c4') AS VARCHAR(16777216))),
+	RATING NUMBER(38,0) AS (TO_NUMBER(GET(VALUE, 'c5'))),
+	PROGRESS NUMBER(38,0) AS (TO_NUMBER(GET(VALUE, 'c6'))),
+	TITLE VARCHAR(16777216) AS (CAST(GET(VALUE, 'c7') AS VARCHAR(16777216))),
+	PATRON VARCHAR(16777216) AS (CAST(GET(VALUE, 'c8') AS VARCHAR(16777216))),
+	ONLINE VARCHAR(16777216) AS (CAST(GET(VALUE, 'c9') AS VARCHAR(16777216))))
+location=@EXT_JSON_STAGE/
+file_format=(TYPE=json NULL_IF=())
+;
+
+
+create or replace external table CHESSDB.PUBLIC.BULLETDATA_JSON(
+	ID VARCHAR(16777216) AS (CAST(GET(VALUE, 'c1') AS VARCHAR(16777216))),
+	USERNAME VARCHAR(16777216) AS (CAST(GET(VALUE, 'c2') AS VARCHAR(16777216))),
+	PERFS VARCHAR(16777216) AS (CAST(GET(VALUE, 'c3') AS VARCHAR(16777216))),
+	BULLET VARCHAR(16777216) AS (CAST(GET(VALUE, 'c4') AS VARCHAR(16777216))),
+	RATING NUMBER(38,0) AS (TO_NUMBER(GET(VALUE, 'c5'))),
+	PROGRESS NUMBER(38,0) AS (TO_NUMBER(GET(VALUE, 'c6'))),
+	TITLE VARCHAR(16777216) AS (CAST(GET(VALUE, 'c7') AS VARCHAR(16777216))),
+	PATRON VARCHAR(16777216) AS (CAST(GET(VALUE, 'c8') AS VARCHAR(16777216))),
+	ONLINE VARCHAR(16777216) AS (CAST(GET(VALUE, 'c9') AS VARCHAR(16777216))))
+location=@EXT_JSON_STAGE/
+file_format=(TYPE=json NULL_IF=())
+;
+
+
+create or replace external table CHESSDB.PUBLIC.RAPIDDATA_JSON(
+	ID VARCHAR(16777216) AS (CAST(GET(VALUE, 'c1') AS VARCHAR(16777216))),
+	USERNAME VARCHAR(16777216) AS (CAST(GET(VALUE, 'c2') AS VARCHAR(16777216))),
+	PERFS VARCHAR(16777216) AS (CAST(GET(VALUE, 'c3') AS VARCHAR(16777216))),
+	BULLET VARCHAR(16777216) AS (CAST(GET(VALUE, 'c4') AS VARCHAR(16777216))),
+	RATING NUMBER(38,0) AS (TO_NUMBER(GET(VALUE, 'c5'))),
+	PROGRESS NUMBER(38,0) AS (TO_NUMBER(GET(VALUE, 'c6'))),
+	TITLE VARCHAR(16777216) AS (CAST(GET(VALUE, 'c7') AS VARCHAR(16777216))),
+	PATRON VARCHAR(16777216) AS (CAST(GET(VALUE, 'c8') AS VARCHAR(16777216))),
+	ONLINE VARCHAR(16777216) AS (CAST(GET(VALUE, 'c9') AS VARCHAR(16777216))))
+location=@EXT_JSON_STAGE/
+file_format=(TYPE=json NULL_IF=())
+;
+
+
+Created 3 traget tables to copy external staged data.
+
+---External stage area created
+
+create or replace stage CHESSDB.public.ext_json_stage
+  URL = 's3://chessplayerdata'
+  STORAGE_INTEGRATION = S3Integration
+  file_format = CHESSDB.public.json_format;
+
+
+copy into CHESSDB.public.BULLETDATA_TRAGET(ID,USERNAME,PERFS,BULLET,RATING,PROGRESS,TITLE,PATRON,ONLINE)
+from (select 
+$1:"id":: string,
+$1:"username":: string,
+$1:"perfs":: string,
+$1:"blitz":: string,
+$1:"rating":: string,
+$1:"progress":: int,
+$1:"title":: string,
+$1:"patron":: string,
+$1:"online":: varchar(20)
+METADATA$FILENAME,
+METADATA$FILE_ROW_NUMBER,
+TO_TIMESTAMP_NTZ(current_timestamp)
+from @CHESSDB.public.ext_json_stage);
+
+
+
+copy into CHESSDB.public.BLITZDATA_TRAGET(ID,USERNAME,PERFS,BULLET,RATING,PROGRESS,TITLE,PATRON,ONLINE)
+from (select 
+$1:"id":: string,
+$1:"username":: string,
+$1:"perfs":: string,
+$1:"blitz":: string,
+$1:"rating":: string,
+$1:"progress":: int,
+$1:"title":: string,
+$1:"patron":: string,
+$1:"online":: varchar(20)
+METADATA$FILENAME,
+METADATA$FILE_ROW_NUMBER,
+TO_TIMESTAMP_NTZ(current_timestamp)
+from @CHESSDB.public.ext_json_stage);
+
+
+copy into CHESSDB.public.BULLETDATA_TRAGET(ID,USERNAME,PERFS,target,RATING,PROGRESS,TITLE,PATRON,ONLINE)
+from (select 
+$1:"id":: string,
+$1:"username":: string,
+$1:"perfs":: string,
+$1:"target":: string,
+$1:"rating":: string,
+$1:"progress":: int,
+$1:"title":: string,
+$1:"patron":: string,
+$1:"online":: varchar(20)
+METADATA$FILENAME,
+METADATA$FILE_ROW_NUMBER,
+TO_TIMESTAMP_NTZ(current_timestamp)
+from @CHESSDB.public.ext_json_stage);
+
+
+
