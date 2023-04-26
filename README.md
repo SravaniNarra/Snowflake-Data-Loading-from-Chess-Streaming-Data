@@ -1,44 +1,28 @@
-# Data Engineering Project Template
+# Snowflake Data Loading from Chess Streaming Data
 
-This is a template you can use for your next data engineering portfolio project. To copy it, log into GitHub and click on the **Use this template** button above.
+Purpose:
 
-![GitHub use this template button](use-this-template-button.png)
+Building an end-to-end Data pipeline to collect useful information about streamers on chess.com, storing this data in S3 and modelling it on Snowflake
 
-## Overview
 
-Here you want to write a short overview of the goals of your project and how it works at a high level. If possible, include one or two images of the end product and architecture diagram (see examples below). diagrams.net is a great tool for creating architecture diagrams.
-
-### Data Visualization
-
-![Example dashboard image](example-dashboard.png)
-
-### Data Architecture
-
-![Example architecture image](example-architecture.png)
-
-If you decide to include this, you should also talk a bit about why you chose the architecture and tools you did for this project.
-
-## Prerequisites
-
-Directions or anything needed before running the project.
-
-- Prerequisite 1
-- Prerequisite 2
-- Prerequisite 3
 
 ## How to Run This Project
 
-Replace the example step-by-step instructions with your own.
+Steps I followed to achieve the requirement:
+1.	I have used Lichess API to extract chess data. In that Bersrek is a Python client for the Lichess API.
+2.	Authentication is done with personal tokens and establishing a session.
+3.	Post that I have obtained Blitz, Bullet, Rapid and Livestreaming leader boards. 
+4.	Boto3 makes it easy to integrate your Python application, library, or script with AWS services including Amazon S3. 
+5.	Connected to AWS using AWS access key and secret key.
+6.	After that written script to automatically load the data pulled from API to S3.
+7.	Configured storage integration object in snowflake to access S3 bucket
+8.	Configured role and edited access policy in IAM and Snowflake, S3 connection is established.
+9.	SQS Queue configuration:Using SQS, we can send, store, and receive messages between two different services by creating an intermediate queue instead of sending the messages directly.
+10.	Loaded S3 file to snowflake tables using copy into command.
+11.	Installed Airflow and done snowflake to airflow configuration.
+12.	Airflow is basically used to Orchestrate the script to operate on timely basis. In this project it is to be operated every hour.
 
-1. Install x packages
-2. Run command: `python x`
-3. Make sure it's running properly by checking z
-4. To clean up at the end, run script: `python cleanup.py`
 
-## Lessons Learned
+# Contact
 
-It's good to reflect on what you learned throughout the process of building this project. Here you might discuss what you would have done differently if you had more time/money/data. Did you end up choosing the right tools or would you try something else next time?
-
-## Contact
-
-Please feel free to contact me if you have any questions at: LinkedIn, Twitter
+https://www.linkedin.com/in/narrasravani/
