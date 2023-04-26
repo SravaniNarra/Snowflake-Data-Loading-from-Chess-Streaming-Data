@@ -1,6 +1,6 @@
 # Snowflake Data Loading from Chess Streaming Data
 
-Purpose:
+## Purpose:
 
 Building an end-to-end Data pipeline to collect useful information about streamers on chess.com, storing this data in S3 and modelling it on Snowflake
 
